@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  pdfprepro:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+      - VISION_CREDENTIALS_PATH=${VISION_CREDENTIALS_PATH}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    volumes:
+      - ./images:/app/images:rw
+      - ./temp_images:/app/temp_images:rw
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s 
