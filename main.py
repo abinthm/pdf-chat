@@ -32,19 +32,26 @@ if not SUPABASE_URL:
     missing_vars.append("SUPABASE_URL")
 if not SUPABASE_KEY:
     missing_vars.append("SUPABASE_KEY")
-if not VISION_CREDENTIALS_PATH:
-    missing_vars.append("VISION_CREDENTIALS_PATH")
 if not GEMINI_API_KEY:
     missing_vars.append("GEMINI_API_KEY")
+
+# VISION_CREDENTIALS_PATH is optional for cloud deployment
+if not VISION_CREDENTIALS_PATH:
+    print("⚠️  VISION_CREDENTIALS_PATH not set - will use default service account (cloud deployment)")
 
 if missing_vars:
     raise RuntimeError(f"Missing required environment variables: {', '.join(missing_vars)}")
 
 # Handle VISION_CREDENTIALS_PATH - support both file path and JSON content
-def setup_vision_credentials(credentials_path_or_json):
+def setup_vision_credentials(credentials_path_or_json=None):
     """Setup Google Cloud Vision credentials from file path or JSON content"""
     import tempfile
     import json
+    
+    # If no credentials provided, use default service account (cloud deployment)
+    if not credentials_path_or_json:
+        print("Using default service account for Vision API")
+        return None
     
     # Check if it's a valid JSON string (credentials content)
     try:
@@ -61,7 +68,7 @@ def setup_vision_credentials(credentials_path_or_json):
         else:
             raise FileNotFoundError(f"Credentials file not found: {credentials_path_or_json}")
 
-# Setup vision credentials
+# Setup vision credentials (can be None for cloud deployment)
 VISION_CREDENTIALS_FILE = setup_vision_credentials(VISION_CREDENTIALS_PATH)
 
 # Create Supabase client with basic configuration

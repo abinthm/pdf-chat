@@ -8,15 +8,24 @@ import time
 import requests
 
 class ImageTextExtractor:
-    def __init__(self, credentials_path):
+    def __init__(self, credentials_path=None):
         """
         Initialize the Vision API client
         
         Args:
-            credentials_path (str): Path to the JSON credentials file
+            credentials_path (str, optional): Path to the JSON credentials file.
+                                           If None, will use default service account (for cloud deployment)
         """
-        # Set the environment variable for authentication
-        os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_path
+        if credentials_path:
+            # Use provided credentials file (for local development)
+            os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_path
+            print(f"Using credentials file: {credentials_path}")
+        else:
+            # Use default service account (for cloud deployment)
+            print("Using default service account (cloud deployment)")
+            # Clear any existing credentials to use default service account
+            if 'GOOGLE_APPLICATION_CREDENTIALS' in os.environ:
+                del os.environ['GOOGLE_APPLICATION_CREDENTIALS']
         
         # Initialize the Vision API client
         self.client = vision.ImageAnnotatorClient()
